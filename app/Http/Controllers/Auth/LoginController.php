@@ -70,7 +70,9 @@ class LoginController extends Controller
         $user->email=$socialize_user->email;
         $user->avatar=$socialize_user->avatar;
         $user->avatar_original=$socialize_user->avatar_original;
-        $user->banner=$socialize_user->user['profile_banner_url'];
+        if(!empty($socialize_user->user['profile_banner_url'])){
+            $user->banner=$socialize_user->user['profile_banner_url'];
+        }
         $user->twitter_id = $socialize_user->getId();
         $user->oauth_token=$socialize_user->token;
         $user->oauth_token_secret=$socialize_user->tokenSecret;
