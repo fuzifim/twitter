@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Jobs\ProcessTwitter;
 use App\User;
 use App\Post;
 use Input;
@@ -100,47 +101,52 @@ class LoginController extends Controller
             return redirect('/');
         }
     }
+    public function autoAddFollow(){
+        $getUser=User::where('follow','pending')
+            ->where('twitter','=',NULL)
+            ->limit(1)->get();
+        ProcessTwitter::dispatch($getUser)->delay(now()->addMinutes(3));
+    }
     public function addFollow(){
         if($this->_user->follow=='pending'){
             $user=$this->_user;
-           /* $request_token = [
-                'token'  => $this->_user->oauth_token,
-                'secret' => $user->oauth_token_secret,
-            ];
-            Twitter::reconfig($request_token);
-            $credentials = Twitter::getCredentials();
-            if (is_object($credentials) && !isset($credentials->error))
-            {
-
-            }*/
-            $listFollow=json_decode(Twitter::getFollowers(['screen_name' => $user->nickname,'count' => 20, 'format' => 'json']));
-            if(!empty($listFollow->users) && count($listFollow->users)){
-                foreach($listFollow->users as $follow){
-                    $userFollow=User::where('twitter_id',$follow->id)->first();
-                    if(empty($userFollow->id)){
-                        $userFollow = new User;
-                        $userFollow->name=$follow->name;
-                        $userFollow->nickname=$follow->screen_name;
-                        if(!empty($follow->profile_image_url)){
-                            $userFollow->avatar=$follow->profile_image_url;
+            try {
+                $getFollow=Twitter::getFollowers(['screen_name' => $user->nickname,'count' => 20, 'format' => 'json']);
+                $listFollow=json_decode($getFollow);
+                if(!empty($listFollow->users) && count($listFollow->users)){
+                    foreach($listFollow->users as $follow){
+                        $userFollow=User::where('twitter_id',$follow->id)->first();
+                        if(empty($userFollow->id)){
+                            $userFollow = new User;
+                            $userFollow->name=$follow->name;
+                            $userFollow->nickname=$follow->screen_name;
+                            if(!empty($follow->profile_image_url)){
+                                $userFollow->avatar=$follow->profile_image_url;
+                            }
+                            if(!empty($follow->profile_banner_url)){
+                                $userFollow->banner=$follow->profile_banner_url;
+                            }
+                            $userFollow->twitter_id = $follow->id;
+                            $userFollow->follow='pending';
+                            $userFollow->save();
                         }
-                        if(!empty($follow->profile_banner_url)){
-                            $userFollow->banner=$follow->profile_banner_url;
-                        }
-                        $userFollow->twitter_id = $follow->id;
-                        $userFollow->follow='pending';
-                        $userFollow->save();
+                        DB::table('user_follow')
+                            ->where('user_id',$user->id)
+                            ->where('follow_id',$userFollow->id)
+                            ->delete();
+                        DB::table('user_follow')->insert(
+                            ['user_id' => $user->id, 'follow_id' => $userFollow->id]
+                        );
                     }
-                    DB::table('user_follow')
-                        ->where('user_id',$user->id)
-                        ->where('follow_id',$userFollow->id)
-                        ->delete();
-                    DB::table('user_follow')->insert(
-                        ['user_id' => $user->id, 'follow_id' => $userFollow->id]
-                    );
+                    $user->follow='success';
+                    $user->save();
+                    return 'Follow success, ';
                 }
-                $user->follow='success';
+            }
+            catch (\Exception $e) {
+                $user->follow='faild';
                 $user->save();
+                return 'Follow faild, ';
             }
         }
     }
@@ -148,50 +154,7 @@ class LoginController extends Controller
         $user=User::where('nickname',$request->route('nickname'))->first();
         $this->_user=$user;
         $this->addFollow();
-        if(!empty($user->id) && empty($user->twitter)){
-            $listTweet=Twitter::getUserTimeline(['screen_name' => $request->route('nickname'), 'count' => 20, 'format' => 'json']);
-            $tweetDecode=json_decode($listTweet);
-            if(count($tweetDecode)){
-                foreach($tweetDecode as $tweet){
-                    $getTweet=DB::table('tweet') ->where('tweet_id',$tweet->id)->first();
-                    if(empty($getTweet->id)){
-                        $getTweetId=DB::table('tweet')->insertGetId(
-                            [
-                                'user_id' => $user->id,
-                                'tweet_created_at' => $tweet->created_at,
-                                'tweet_id'=>$tweet->id,
-                                'text'=>$tweet->text
-                            ]
-                        );
-                    }else{
-                        $getTweetId=$getTweet->id;
-                    }
-                    if(!empty($tweet->entities->hashtags) && count($tweet->entities->hashtags)){
-                        foreach($tweet->entities->hashtags as $hashtag){
-                            $getHashtag=DB::table('tags') ->where('text',$hashtag->text)->first();
-                            if(empty($getHashtag->id)){
-                                $getHashtagId=DB::table('tags')->insertGetId(
-                                    [
-                                        'text' => $hashtag->text
-                                    ]
-                                );
-                            }else{
-                                $getHashtagId=$getHashtag->id;
-                            }
-                            DB::table('tags_relation_tweet')
-                                ->where('tweet_id',$getTweetId)
-                                ->where('tag_id',$getHashtagId)
-                                ->delete();
-                            DB::table('tags_relation_tweet')->insert(
-                                ['tweet_id' => $getTweetId, 'tag_id' => $getHashtagId]
-                            );
-                        }
-                    }
-                }
-            }
-            $user->twitter='success';
-            $user->save();
-        }
+        $this->addTimeLine();
         $listTweet=DB::table('tweet')
             ->where('user_id',$user->id)
             ->simplePaginate(10);
@@ -205,6 +168,61 @@ class LoginController extends Controller
             'listFollowers'=>$listFollowers,
             'user'=>$user
         ));
+    }
+    public function addTimeLine(){
+        $user=$this->_user;
+        if(!empty($user->id) && empty($user->twitter)){
+            try {
+                $listTweet=Twitter::getUserTimeline(['screen_name' => $user->nickname, 'count' => 20, 'format' => 'json']);
+                $tweetDecode=json_decode($listTweet);
+                if(count($tweetDecode)){
+                    foreach($tweetDecode as $tweet){
+                        $getTweet=DB::table('tweet') ->where('tweet_id',$tweet->id)->first();
+                        if(empty($getTweet->id)){
+                            $getTweetId=DB::table('tweet')->insertGetId(
+                                [
+                                    'user_id' => $user->id,
+                                    'tweet_created_at' => $tweet->created_at,
+                                    'tweet_id'=>$tweet->id,
+                                    'text'=>$tweet->text
+                                ]
+                            );
+                        }else{
+                            $getTweetId=$getTweet->id;
+                        }
+                        if(!empty($tweet->entities->hashtags) && count($tweet->entities->hashtags)){
+                            foreach($tweet->entities->hashtags as $hashtag){
+                                $getHashtag=DB::table('tags') ->where('text',$hashtag->text)->first();
+                                if(empty($getHashtag->id)){
+                                    $getHashtagId=DB::table('tags')->insertGetId(
+                                        [
+                                            'text' => $hashtag->text
+                                        ]
+                                    );
+                                }else{
+                                    $getHashtagId=$getHashtag->id;
+                                }
+                                DB::table('tags_relation_tweet')
+                                    ->where('tweet_id',$getTweetId)
+                                    ->where('tag_id',$getHashtagId)
+                                    ->delete();
+                                DB::table('tags_relation_tweet')->insert(
+                                    ['tweet_id' => $getTweetId, 'tag_id' => $getHashtagId]
+                                );
+                            }
+                        }
+                    }
+                }
+                $user->twitter='success';
+                $user->save();
+                return 'Twitter success, ';
+            }
+            catch (\Exception $e) {
+                $user->twitter='faild';
+                $user->save();
+                return 'Twitter faild, ';
+            }
+        }
     }
     public function tweetList(){
         $postList=Post::orderBy('updated_at','desc')->simplePaginate(10);
