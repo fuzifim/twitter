@@ -24,10 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('inspire')
-                  ->everyMinute();
-        $schedule->call('\App\Http\Controllers\Auth\LoginController@post');
-        $schedule->call('\App\Http\Controllers\Auth\LoginController@autoAddFollow');
+         $schedule->command('inspire');
+        //$schedule->call('\App\Http\Controllers\Auth\LoginController@post');
+        $schedule->call('\App\Http\Controllers\Auth\LoginController@autoAddFollow')->cron('*/3 * * * *');
     }
 
     /**

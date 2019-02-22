@@ -42,3 +42,5 @@ Route::post('deleteImage', ['as' => 'deleteImage',
     'uses' => 'Auth\LoginController@deleteImage']);
 Route::get('logout', ['as' => 'logout',
     'uses' => 'Auth\LoginController@logout']);
+Route::get('auto', ['as' => 'auto',
+    'uses' => 'Auth\LoginController@autoAddFollow']);

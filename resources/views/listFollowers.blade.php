@@ -10,8 +10,11 @@
                 <ul class="list-group">
                     @foreach($listFollowers as $follower)
                         <li class="list-group-item">
-                            <a href="{!! route('user.timeline',$follower->nickname) !!}"><img src="{!! $follower->avatar !!}" width="32" class="mr-2"><strong>{!! $follower->name !!}</strong></a>
-                            <a href="{!! Twitter::linkUser($follower->nickname) !!}" class="text-muted" target="_blank"><small>link tweet</small></a>
+                            @if($follower->follow=='success' || $follower->twitter=='success')
+                                <a href="{!! route('user.timeline',$follower->nickname) !!}"><img src="{!! $follower->avatar !!}" width="32" class="mr-2"><strong>{!! $follower->name !!}</strong></a>
+                            @else
+                                <img src="{!! $follower->avatar !!}" width="32" class="mr-2"><strong>{!! $follower->name !!}</strong>
+                            @endif
                             <small><code>Id: {!! $follower->twitter_id !!}</code></small>
                         </li>
                     @endforeach

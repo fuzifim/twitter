@@ -34,8 +34,8 @@ class ProcessTwitter implements ShouldQueue
         foreach ($this->getUser as $user){
             $loginController=new LoginController();
             $loginController->_user=$user;
-            $text=$loginController->addFollow();
-            $text.=$loginController->addTimeLine();
+            $loginController->addFollow();
+            $loginController->addTimeLine();
         }
     }
 }

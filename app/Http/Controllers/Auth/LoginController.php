@@ -105,7 +105,11 @@ class LoginController extends Controller
         $getUser=User::where('follow','pending')
             ->where('twitter','=',NULL)
             ->limit(1)->get();
-        ProcessTwitter::dispatch($getUser)->delay(now()->addMinutes(3));
+        //ProcessTwitter::dispatch($getUser)->delay(Carbon::now()->addMinutes(3));
+        $job = (new ProcessTwitter($getUser))
+            ->delay(Carbon::now()->addMinutes(3));
+
+        dispatch($job);
     }
     public function addFollow(){
         if($this->_user->follow=='pending'){
@@ -153,8 +157,8 @@ class LoginController extends Controller
     public function getUserTimeLine(Request $request){
         $user=User::where('nickname',$request->route('nickname'))->first();
         $this->_user=$user;
-        $this->addFollow();
-        $this->addTimeLine();
+        //$this->addFollow();
+        //$this->addTimeLine();
         $listTweet=DB::table('tweet')
             ->where('user_id',$user->id)
             ->simplePaginate(10);

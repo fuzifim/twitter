@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand" href="{!! route('home') !!}">ATC Analyze</a>
+    <a class="navbar-brand" href="https://cungcap.net" target="_blank"><img src="https://cungcap.net/themes/default/img/logo.svg" width="120"></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -19,6 +19,9 @@
             @endif
         </ul>
         <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{!! route('home') !!}">Home</a>
+            </li>
             @if(Auth::check())
                 <li class="nav-item active">
                     <a class="nav-link" href="{!! route('home') !!}"><img src="{!! Auth::user()->avatar !!}" width="20" class="mr-2">{!! Auth::user()->name !!}</a>
