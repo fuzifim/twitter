@@ -46,7 +46,9 @@
                                 </li>
                             @endforeach
                         </ul>
-                        {{ $listFollowers->links() }}
+                        <div class="form-group mt-2">
+                            {{ $listFollowers->links() }}
+                        </div>
                     @endif
                 </div>
             </div>
