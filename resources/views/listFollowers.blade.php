@@ -6,7 +6,7 @@
 @section('content')
     <div class="container">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="form-group mt-2">
                     <div class="alert alert-info p-2">
                         <strong>Cung Cấp đến mọi người ⭐ ⭐ ⭐ ⭐ ⭐</strong>
@@ -15,7 +15,7 @@
                     <div class="btn-group d-flex" role="group"><a class="btn btn-success w-100" href="https://cungcap.net" target="_blank"><h4>Đăng tin miễn phí</h4></a></div>
                 </div>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <div class="form-group mt-2">
                     @if(count($listFollowers))
                         <ul class="list-group">
