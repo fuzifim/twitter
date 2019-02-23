@@ -50,13 +50,15 @@ class IndexController extends Controller
     {
         # $this->middleware('guest')->except('logout');
     }
-    public function index()
+    public function index(Request $request)
     {
-        $listFollowers=DB::table('users')
-            //->join('user_follow', 'users.id', '=', 'user_follow.follow_id')
-            //->where('user_follow.user_id',$user->id)
-            ->select('users.*')
-            ->simplePaginate(15);
+        $page = $request->has('page') ? $request->query('page') : 1;
+        $listFollowers = Cache::store('memcached')->remember('home_list_follow_'.$page,1, function()
+        {
+            return DB::table('users')
+                ->select('users.*')
+                ->simplePaginate(15);
+        });
         return view('listFollowers',array(
             'listFollowers'=>$listFollowers,
         ));

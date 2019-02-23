@@ -82,17 +82,21 @@ class LoginController extends Controller
         Auth::login($user);
         return redirect('/');
     }
-    public function followers(){
+    public function followers(Request $request){
         if(Auth::check()){
             $user=Auth::user();
             if(!empty($user->oauth_token) && !empty($user->oauth_token_secret)){
                 $this->_user=$user;
                 $this->addFollow();
-                $listFollowers=DB::table('users')
-                    ->join('user_follow', 'users.id', '=', 'user_follow.follow_id')
-                    ->where('user_follow.user_id',$user->id)
-                    ->select('users.*')
-                    ->simplePaginate(15);
+                $page = $request->has('page') ? $request->query('page') : 1;
+                $listFollowers = Cache::store('memcached')->remember('page_list_follow_'.$page,1, function() use ($user)
+                {
+                    return DB::table('users')
+                        ->join('user_follow', 'users.id', '=', 'user_follow.follow_id')
+                        ->where('user_follow.user_id',$user->id)
+                        ->select('users.*')
+                        ->simplePaginate(15);
+                });
                 return view('listFollowers',array(
                     'listFollowers'=>$listFollowers,
                 ));
