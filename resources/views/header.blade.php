@@ -31,7 +31,7 @@
                 </li>
             @else
                 <li class="nav-item active">
-                    <a class="nav-link" href="{!! route('twitter.login') !!}">Twitter login <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="{!! route('twitter.login') !!}">login <span class="sr-only">(current)</span></a>
                 </li>
             @endif
         </ul>
