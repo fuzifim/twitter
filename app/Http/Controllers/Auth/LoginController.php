@@ -97,8 +97,18 @@ class LoginController extends Controller
                         ->select('users.*')
                         ->simplePaginate(15);
                 });
+                $newUserActive = Cache::store('memcached')->remember('new_user_active',1, function()
+                {
+                    return DB::table('users')
+                        ->where('follow','success')
+                        ->orWhere('twitter','success')
+                        ->orderBy('updated_at','desc')
+                        ->select('users.*')
+                        ->take(10)->get();
+                });
                 return view('listFollowers',array(
                     'listFollowers'=>$listFollowers,
+                    'newUserActive'=>$newUserActive
                 ));
             }
         }else{
@@ -169,11 +179,22 @@ class LoginController extends Controller
         $listFollowers=DB::table('users')
             ->join('user_follow', 'users.id', '=', 'user_follow.follow_id')
             ->where('user_follow.user_id',$user->id)
+            ->orderBy('created_at','desc')
             ->select('users.*')
             ->get();
+        $newUserActive = Cache::store('memcached')->remember('new_user_active',1, function()
+        {
+            return DB::table('users')
+                ->where('follow','success')
+                ->orWhere('twitter','success')
+                ->orderBy('updated_at','desc')
+                ->select('users.*')
+                ->take(10)->get();
+        });
         return view('listTweet',array(
             'listTweet'=>$listTweet,
             'listFollowers'=>$listFollowers,
+            'newUserActive'=>$newUserActive,
             'user'=>$user
         ));
     }
