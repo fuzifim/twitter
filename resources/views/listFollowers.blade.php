@@ -24,7 +24,7 @@
                                     @else
                                         <img src="{!! $follower->avatar !!}" width="32" class="mr-2"><strong>{!! $follower->name !!}</strong>
                                     @endif
-                                    <small><code class="text-muted">Id: {!! $follower->twitter_id !!}</code></small>
+                                    <p><small><code class="text-muted">Id: {!! $follower->twitter_id !!}</code> - {{$follower->updated_at}}</small></p>
                                 </li>
                             @endforeach
                         </ul>
