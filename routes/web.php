@@ -11,10 +11,8 @@
 |
 */
 
-Route::get('/', ['as' => 'home', function () {
-
-    return view('home');
-}]);
+Route::get('/', ['as' => 'home',
+    'uses' => 'IndexController@index']);
 Route::get('/search', ['as' => 'search', function () {
     dd(json_decode(Twitter::getSearch(['screen_name'=>'conduongviet','q'=>'%23Beauty','format'=>'json'])));
 }]);

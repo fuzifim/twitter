@@ -19,6 +19,7 @@
                         </li>
                     @endforeach
                 </ul>
+                {{ $listFollowers->links() }}
             @endif
         </div>
     </div>

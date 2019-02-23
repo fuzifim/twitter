@@ -92,7 +92,7 @@ class LoginController extends Controller
                     ->join('user_follow', 'users.id', '=', 'user_follow.follow_id')
                     ->where('user_follow.user_id',$user->id)
                     ->select('users.*')
-                    ->get();
+                    ->simplePaginate(15);
                 return view('listFollowers',array(
                     'listFollowers'=>$listFollowers,
                 ));
