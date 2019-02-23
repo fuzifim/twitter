@@ -37,6 +37,6 @@
         </ul>
     </div>
 </nav>
-<div class="container">
+<!--<div class="container">
     <form class="form-group" id="searchform" action="# method="get"><div class="card-body row no-gutters align-items-center"><div class="col"><input class="form-control form-control-lg form-control-borderless" name="v" id="searchAll" type="text" placeholder="Enter keyword... " value="" autocomplete="off"><input type="hidden" name="t" id="searchType" value=""><input type="hidden" name="i" id="searchId" value=""></div><div class="col-auto"><button class="btn btn-lg btn-success" type="submit">Search</button></div></div></form>
-</div>
+</div>-->
