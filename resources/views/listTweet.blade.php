@@ -10,7 +10,7 @@
             {!! Twitter::linkUser($user->nickname) !!}
         </div>
         <div class="row">
-            <div class="col-4">
+            <div class="col-md-4">
                 <div class="form-group mt-2">
                     <div class="alert alert-info p-2">
                         <strong>Cung Cấp đến mọi người ⭐ ⭐ ⭐ ⭐ ⭐</strong>
@@ -51,7 +51,7 @@
                     @endif
                 </div>
             </div>
-            <div class="col-8">
+            <div class="col-md-8">
                 <div class="form-group mt-2">
                     <h3>List Tweet</h3>
                     @if(count($listTweet))
