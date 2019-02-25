@@ -5,7 +5,7 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarsExample02">
-        <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav">
             @if(Auth::check())
                 <li class="nav-item">
                     <a class="nav-link" href="{!! route('followers') !!}">Follower list</a>
@@ -18,9 +18,9 @@
                 </li>
             @endif
         </ul>
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="{!! route('home') !!}">Home</a>
+                <a class="nav-link" href="{!! route('home') !!}">Danh sách twitter</a>
             </li>
             @if(Auth::check())
                 <li class="nav-item active">
