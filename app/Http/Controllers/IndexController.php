@@ -53,21 +53,15 @@ class IndexController extends Controller
     public function index(Request $request)
     {
         $page = $request->has('page') ? $request->query('page') : 1;
-        $listFollowers = Cache::store('memcached')->remember('home_list_follow_'.$page,1, function()
-        {
-            return DB::table('users')
-                ->select('users.*')
-                ->simplePaginate(15);
-        });
-        $newUserActive = Cache::store('memcached')->remember('new_user_active',1, function()
-        {
-            return DB::table('users')
-                ->where('follow','success')
-                ->orWhere('twitter','success')
-                ->select('users.*')
-                ->orderBy('updated_at','desc')
-                ->take(10)->get();
-        });
+        $listFollowers = DB::table('users')
+            ->select('users.*')
+            ->simplePaginate(15);
+        $newUserActive = DB::table('users')
+            ->where('follow','success')
+            ->orWhere('twitter','success')
+            ->select('users.*')
+            ->orderBy('updated_at','desc')
+            ->take(10)->get();
         return view('listFollowers',array(
             'listFollowers'=>$listFollowers,
             'newUserActive'=>$newUserActive

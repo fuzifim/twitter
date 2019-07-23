@@ -89,23 +89,17 @@ class LoginController extends Controller
                 $this->_user=$user;
                 $this->addFollow();
                 $page = $request->has('page') ? $request->query('page') : 1;
-                $listFollowers = Cache::store('memcached')->remember('page_list_follow_'.$page,1, function() use ($user)
-                {
-                    return DB::table('users')
-                        ->join('user_follow', 'users.id', '=', 'user_follow.follow_id')
-                        ->where('user_follow.user_id',$user->id)
-                        ->select('users.*')
-                        ->simplePaginate(15);
-                });
-                $newUserActive = Cache::store('memcached')->remember('new_user_active',1, function()
-                {
-                    return DB::table('users')
-                        ->where('follow','success')
-                        ->orWhere('twitter','success')
-                        ->orderBy('updated_at','desc')
-                        ->select('users.*')
-                        ->take(10)->get();
-                });
+                $listFollowers = DB::table('users')
+                    ->join('user_follow', 'users.id', '=', 'user_follow.follow_id')
+                    ->where('user_follow.user_id',$user->id)
+                    ->select('users.*')
+                    ->simplePaginate(15);
+                $newUserActive = DB::table('users')
+                    ->where('follow','success')
+                    ->orWhere('twitter','success')
+                    ->orderBy('updated_at','desc')
+                    ->select('users.*')
+                    ->take(10)->get();
                 return view('listFollowers',array(
                     'listFollowers'=>$listFollowers,
                     'newUserActive'=>$newUserActive
@@ -182,15 +176,12 @@ class LoginController extends Controller
             ->orderBy('created_at','desc')
             ->select('users.*')
             ->get();
-        $newUserActive = Cache::store('memcached')->remember('new_user_active',1, function()
-        {
-            return DB::table('users')
-                ->where('follow','success')
-                ->orWhere('twitter','success')
-                ->orderBy('updated_at','desc')
-                ->select('users.*')
-                ->take(10)->get();
-        });
+        $newUserActive = DB::table('users')
+            ->where('follow','success')
+            ->orWhere('twitter','success')
+            ->orderBy('updated_at','desc')
+            ->select('users.*')
+            ->take(10)->get();
         return view('listTweet',array(
             'listTweet'=>$listTweet,
             'listFollowers'=>$listFollowers,
