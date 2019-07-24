@@ -20,9 +20,8 @@
 <footer class="page-footer font-small indigo mt-2">
     <div class="container text-center text-md-left">
         <a href="https://taoweb.cungcap.net/" target="_blank">Tạo website</a>,
-        <a href="http://search.cungcap.net/" target="_blank">Tìm kiếm</a>,
-        <a href="http://domain.cungcap.net/" target="_blank">Thông tin tên miền</a>,
-        <a href="http://company.cungcap.net/" target="_blank">Thông tin công ty</a>,
+        <a href="http://d.cungcap.com.vn/" target="_blank">Thông tin tên miền</a>,
+        <a href="http://c.cungcap.com.vn/" target="_blank">Thông tin công ty</a>,
         <a href="http://twitter.cungcap.net/" target="_blank">Thông tin twitter</a>
     </div>
     <div class="bg-dark text-center py-3 text-light">© {!! date('Y') !!} Copyright
