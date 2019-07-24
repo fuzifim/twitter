@@ -22,7 +22,8 @@
         <a href="https://taoweb.cungcap.net/" target="_blank">Tạo website</a>,
         <a href="http://d.cungcap.com.vn/" target="_blank">Thông tin tên miền</a>,
         <a href="http://c.cungcap.com.vn/" target="_blank">Thông tin công ty</a>,
-        <a href="http://twitter.cungcap.net/" target="_blank">Thông tin twitter</a>
+        <a href="http://twitter.cungcap.net/" target="_blank">Thông tin twitter</a>,
+        <a href="http://p.cungcap.com.vn/" target="_blank">Cung Cấp Sản Phẩm</a>,
     </div>
     <div class="bg-dark text-center py-3 text-light">© {!! date('Y') !!} Copyright
         <a class="text-light" href="https://cungcap.net/" target="_blank">Cung Cấp</a>
