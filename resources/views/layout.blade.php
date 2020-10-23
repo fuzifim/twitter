@@ -13,6 +13,13 @@
         .nav-default{background: #3b5997 !important;}
     </style>
     @yield('css')
+    <script data-ad-client="ca-pub-6739685874678212" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-6739685874678212",
+            enable_page_level_ads: true
+        });
+    </script>
 </head>
 <body>
 @yield('header')
